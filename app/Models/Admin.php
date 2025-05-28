@@ -2,11 +2,37 @@
 
 namespace App\Models;
 
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class Admin extends Model
+class Admin extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\AdminFactory> */
     use HasFactory;
+
+    protected $table = 'admins';
+
+    protected $fillable = ['name', 'email', 'password', 'role'];
+
+    protected $hidden = ['password', 'remember_token'];
+
+    public function staff()
+    {
+        return $this->hasMany(Staff::class);
+    }
+
+    public function vendors()
+    {
+        return $this->hasMany(Vendor::class);
+    }
+
+    public function tariffCategories()
+    {
+        return $this->hasMany(TariffCategory::class);
+    }
+
+    public function complaints()
+    {
+        return $this->belongsToMany(Complaint::class, 'complaint_admin', 'admin_id', 'complaint_id');
+    }
 }
+?>

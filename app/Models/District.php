@@ -7,6 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class District extends Model
 {
-    /** @use HasFactory<\Database\Factories\DistrictFactory> */
     use HasFactory;
+
+    protected $table = 'districts';
+
+    protected $fillable = ['name'];
+
+    public function zones()
+    {
+        return $this->hasMany(Zone::class);
+    }
 }
+?>

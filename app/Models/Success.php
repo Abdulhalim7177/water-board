@@ -7,6 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class Success extends Model
 {
-    /** @use HasFactory<\Database\Factories\SuccessFactory> */
     use HasFactory;
+
+    protected $table = 'successes';
+
+    protected $fillable = ['polio_id', 'name'];
+
+    public function polio()
+    {
+        return $this->belongsTo(Polio::class);
+    }
+
+    public function customers()
+    {
+        return $this->hasMany(Customer::class);
+    }
 }
+?>
