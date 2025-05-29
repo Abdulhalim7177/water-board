@@ -10,9 +10,10 @@ return new class extends Migration
     {
         Schema::create('tariff_categories', function (Blueprint $table) {
             $table->id();
-            $table->enum('class', ['A', 'B', 'C', 'D', 'E']);
-            $table->string('category');
-            $table->decimal('price', 8, 2);
+            $table->string('code')->unique(); // e.g., 1, cat1
+            $table->string('class'); // e.g., A
+            $table->string('category'); // e.g., Residential
+            $table->decimal('price', 8, 2); // e.g., 10.00
             $table->foreignId('admin_id')->nullable()->constrained('admins');
             $table->timestamps();
         });
@@ -23,3 +24,4 @@ return new class extends Migration
         Schema::dropIfExists('tariff_categories');
     }
 };
+?>

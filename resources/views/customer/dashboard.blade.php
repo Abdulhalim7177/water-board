@@ -1,12 +1,6 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Customer Dashboard</title>
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-</head>
-<body>
+@extends('layouts.app')
+
+@section('content')
     <div class="container mt-5">
         <h1>Welcome, {{ $customer->name }}</h1>
         <div class="card">
@@ -56,3 +50,4 @@
     </div>
 </body>
 </html>
+@endsection

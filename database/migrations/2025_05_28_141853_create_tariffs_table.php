@@ -10,14 +10,13 @@ return new class extends Migration
     {
         Schema::create('tariffs', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('customer_id');
-            $table->foreignId('tariff_category_id')->constrained();
+            $table->foreignId('customer_id')->constrained('customers');
+            $table->foreignId('tariff_category_id')->constrained('tariff_categories');
             $table->decimal('amount', 8, 2);
-            $table->decimal('balance', 8, 2)->default(0);
+            $table->decimal('balance', 8, 2);
             $table->decimal('usage_rate', 8, 2);
             $table->date('due_date');
-            $table->enum('status', ['pending', 'partially_paid', 'paid'])->default('pending');
-            $table->foreign('customer_id')->references('id')->on('customers');
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
     }
@@ -27,3 +26,4 @@ return new class extends Migration
         Schema::dropIfExists('tariffs');
     }
 };
+?>

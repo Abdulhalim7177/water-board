@@ -8,16 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('successes', function (Blueprint $table) {
+        Schema::create('admins', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('polio_id')->constrained()->nullable();
             $table->string('name');
+            $table->string('email')->unique();
+            $table->string('password');
+            $table->string('role');
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('successes');
+        Schema::dropIfExists('admins');
     }
 };
+?>

@@ -8,16 +8,18 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('successes', function (Blueprint $table) {
+        Schema::create('admin_logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('polio_id')->constrained()->nullable();
-            $table->string('name');
+            $table->foreignId('admin_id')->constrained('admins');
+            $table->string('action'); // e.g., created_customer
+            $table->text('details'); // JSON or text
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('successes');
+        Schema::dropIfExists('admin_logs');
     }
 };
+?>
