@@ -10,15 +10,79 @@ use Illuminate\Support\Facades\Validator;
 
 class CustomerController extends Controller
 {
-    // Web: Customer Dashboard
     public function dashboard()
     {
         $customer = Auth::guard('customer')->user();
-        $tariffs = $customer->tariffs()->get();
+        $tariffs = $customer->tariffs()->with('tariffCategory')->get();
         return view('customer.dashboard', compact('customer', 'tariffs'));
     }
 
-    // API: Login
+    public function apiRegister(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'required|string',
+            'surname' => 'required|string',
+            'middle_name' => 'nullable|string',
+            'email' => 'nullable|email|unique:customers,email',
+            'password' => 'required|confirmed|min:8',
+            'street_name' => 'required|string',
+            'area' => 'nullable|string',
+            'landmark' => 'nullable|string',
+            'lga_code' => 'nullable|string|exists:locations,code',
+            'ward_code' => 'nullable|string|exists:locations,code',
+            'contact' => 'required|string',
+            'success_id' => 'required|exists:successes,id',
+            'delivery_code' => 'nullable|string',
+            'billing_condition' => 'nullable|in:Metered,Non-Metered',
+            'customer_position' => 'nullable|string',
+            'water_supply_status' => 'nullable|in:functional,non_functional'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $customer = Customer::create([
+            'billing_id' => Customer::generateBillingId(),
+            'delivery_code' => $request->delivery_code,
+            'first_name' => $request->first_name,
+            'surname' => $request->surname,
+            'middle_name' => $request->middle_name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'street_name' => $request->street_name,
+            'area' => $request->area,
+            'landmark' => $request->landmark,
+            'lga_code' => $request->lga_code,
+            'ward_code' => $request->ward_code,
+            'gps_coordinates' => $request->gps_coordinates,
+            'contact' => $request->contact,
+            'billing_condition' => $request->billing_condition,
+            'customer_position' => $request->customer_position,
+            'water_supply_status' => $request->water_supply_status ?? 'functional',
+            'success_id' => $request->success_id,
+            'status' => 'pending',
+        ]);
+
+        if ($request->gps_area_map) {
+            $customer->geospatialData()->create([
+                'type' => 'area_map',
+                'coordinates' => json_encode($request->gps_area_map)
+            ]);
+        }
+
+        if ($request->gps_perimeter) {
+            $customer->geospatialData()->create([
+                'type' => 'perimeter',
+                'coordinates' => json_encode($request->gps_perimeter)
+            ]);
+        }
+
+        $token = $customer->createToken('api-token')->plainTextToken;
+
+        return response()->json(['token' => $token, 'customer' => $customer], 201);
+    }
+
     public function apiLogin(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -41,52 +105,16 @@ class CustomerController extends Controller
         return response()->json(['token' => $token, 'customer' => $customer]);
     }
 
-    // API: Register
-    public function apiRegister(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'billing_id' => 'required|unique:customers,billing_id',
-            'name' => 'required',
-            'email' => 'required|email|unique:customers,email',
-            'password' => 'required|confirmed|min:8',
-            'address' => 'required',
-            'contact' => 'required',
-            'success_id' => 'required|exists:successes,id',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        $customer = Customer::create([
-            'billing_id' => $request->billing_id,
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'address' => $request->address,
-            'gps_coordinates' => $request->gps_coordinates,
-            'contact' => $request->contact,
-            'success_id' => $request->success_id,
-            'status' => 'pending',
-        ]);
-
-        $token = $customer->createToken('api-token')->plainTextToken;
-
-        return response()->json(['token' => $token, 'customer' => $customer], 201);
-    }
-
-    // API: Get Customer Details
     public function getCustomer(Request $request)
     {
         $customer = $request->user('customer-api');
         return response()->json($customer);
     }
 
-    // API: Get Customer Tariffs
     public function getTariffs(Request $request)
     {
         $customer = $request->user('customer-api');
-        $tariffs = $customer->tariffs()->get();
+        $tariffs = $customer->tariffs()->with('tariffCategory')->get();
         return response()->json($tariffs);
     }
 }

@@ -43,6 +43,8 @@ class GeographicalSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
+        Success::create(['name' => 'GeoZone1']);
+
         DB::table('successes')->insert([
             'polio_id' => $polioId,
             'name' => 'Success 1',

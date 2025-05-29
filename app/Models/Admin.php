@@ -15,6 +15,16 @@ class Admin extends Authenticatable
 
     protected $hidden = ['password', 'remember_token'];
 
+    public function tariffCategories()
+    {
+        return $this->hasMany(TariffCategory::class);
+    }
+
+    public function logs()
+    {
+        return $this->hasMany(AdminLog::class);
+    }
+
     public function staff()
     {
         return $this->hasMany(Staff::class);
@@ -24,12 +34,6 @@ class Admin extends Authenticatable
     {
         return $this->hasMany(Vendor::class);
     }
-
-    public function tariffCategories()
-    {
-        return $this->hasMany(TariffCategory::class);
-    }
-
     public function complaints()
     {
         return $this->belongsToMany(Complaint::class, 'complaint_admin', 'admin_id', 'complaint_id');

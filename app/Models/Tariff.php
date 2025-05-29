@@ -11,8 +11,10 @@ class Tariff extends Model
 
     protected $table = 'tariffs';
 
-    protected $fillable = ['customer_id', 'tariff_category_id', 'amount', 'balance', 'usage_rate', 'due_date', 'status'];
-
+     protected $fillable = [
+        'customer_id', 'tariff_category_id', 'amount', 'balance',
+        'usage_rate', 'due_date', 'status'
+    ];
     public function customer()
     {
         return $this->belongsTo(Customer::class);
